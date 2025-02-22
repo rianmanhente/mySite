@@ -1,4 +1,6 @@
 import { api } from "../services/api.js";
+import { createUser } from "../services/createUser.js";
+import { createCart } from "../services/createCart.js";
 
 async function responseGoogle(response) {
     try {
@@ -31,55 +33,19 @@ async function responseGoogle(response) {
     }
 }
 
-async function createUser(userData) {
-    try {
-        const response = await api.post("/user", userData);
-        localStorage.setItem("User", JSON.stringify(response.data.user))
-        console.log("Resposta Backend (Usuário):", response);
+// function updateUserInterface(name, email, profilePic) {
+//     const userInfo = document.getElementById("user-info");
+//     const userName = document.getElementById("user-name");
+//     const userEmail = document.getElementById("user-email");
+//     const profilePicElement = document.getElementById("profile-pic");
 
-        if(response.data.message == "Usuário já cadastrado") {
-            localStorage.setItem("user", JSON.stringify(response.data.user))
-        }
-        
-        return response.data.user;
-
-    
-    } catch (error) {
-        console.error("Erro ao criar usuário:", error);
-        throw new Error("Falha ao criar usuário");
-    }
-}
-
-async function createCart(userId, email) {
-    try {
-        const userCart = { userId, email };
-
-        const response = await api.post("/cart", userCart);
-
-        localStorage.setItem("Cart", JSON.stringify(response.data.cart))
-
-        console.log("Resposta Backend (Carrinho):", response);
-        
-        return response.data;
-    } catch (error) {
-        console.error("Erro ao criar carrinho:", error);
-        throw new Error("Falha ao criar carrinho");
-    }
-}
-
-function updateUserInterface(name, email, profilePic) {
-    const userInfo = document.getElementById("user-info");
-    const userName = document.getElementById("user-name");
-    const userEmail = document.getElementById("user-email");
-    const profilePicElement = document.getElementById("profile-pic");
-
-    if (userInfo && userName && userEmail && profilePicElement) {
-        userInfo.style.display = "block";
-        userName.textContent = `Nome: ${name}`;
-        userEmail.textContent = `Email: ${email}`;
-        profilePicElement.src = profilePic;
-    }
-}
+//     if (userInfo && userName && userEmail && profilePicElement) {
+//         userInfo.style.display = "block";
+//         userName.textContent = `Nome: ${name}`;
+//         userEmail.textContent = `Email: ${email}`;
+//         profilePicElement.src = profilePic;
+//     }
+// }
 
 function handleError(error) {
     console.error("Erro durante o processo de autenticação:", error);
