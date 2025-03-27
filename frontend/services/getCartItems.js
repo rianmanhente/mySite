@@ -11,9 +11,11 @@ export const getCartItems = async(cartId) => {
             const cartItemsWithProducts = [];
             let totalQuantity = 0;
             let totalValueCart = 0;
-            
+
             for (const item of items) {
                 totalQuantity += item.quantity;
+                // totalValueCart += item.price
+     
                 console.log(`${item.productId} id do produto`);
                 console.log(`${item.quantity} quantidade do produto`);
 
@@ -24,6 +26,8 @@ export const getCartItems = async(cartId) => {
                     // Exibe informações do produto
                     console.log(`Produto: ${productInfo.product.name}`);
                     console.log(`Preço: ${productInfo.product.price}`);
+
+                    totalValueCart += item.quantity * productInfo.product.price;
                     
                     // Adiciona item com informações do produto ao array
                     cartItemsWithProducts.push({
@@ -35,7 +39,7 @@ export const getCartItems = async(cartId) => {
 
 
             // return {cartItemsWithProducts, totalQuantity}; // Retorna o array com os itens e produtos
-            return {cartItemsWithProducts, totalQuantity};
+            return {cartItemsWithProducts, totalQuantity, totalValueCart};
         } else {
             console.error("A resposta não contém uma lista de itens.");
             return [];

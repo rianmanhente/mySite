@@ -2,6 +2,7 @@
 import { addCartItemToCart } from '../services/addCartItemToCart.js'
 import { getProducts } from '../services/getProducts.js'
 import { getCartItems } from '../services/getCartItems.js';
+import { updateCartItemsQuantity } from '../services/updateCartItemQuantity.js';
 
 const userData = localStorage.getItem("User");
 const cartData = localStorage.getItem("Cart");
@@ -26,13 +27,14 @@ getCartItems(cartId)
   .then(response => {
     const cartItems = response.cartItemsWithProducts;
     const totalQuantity = response.totalQuantity;
+    const totalValueCart = response.totalValueCart;
     
     // Atualizar o elemento de quantidade total
     const totalQuantityElement = document.getElementById("totalQuantity");
     totalQuantityElement.textContent = totalQuantity;
     
     // Passar os itens do carrinho para a função addDataToCarts
-    return addDataToCarts(cartItems);
+    return addDataToCarts(cartItems, totalValueCart);
   })
 
 const menuIcon = document.getElementById('menuIcon')
@@ -93,7 +95,7 @@ closeCart.addEventListener('click', () => {
 
 // carttab.apennchild(newCartItem)
 
-    const addDataToCarts = (cartItems) => {
+    const addDataToCarts = (cartItems, totalValueCart) => {
         if(cartItems.length > 0)
         {
             cartItems.forEach(cartItem => {
@@ -112,6 +114,8 @@ closeCart.addEventListener('click', () => {
                     <span data-id="${cartItem.productInfo.product.id}" class="minus">-</span>
                     <span data-id="${cartItem.productInfo.product.id}"  class="plus">+</span>
                 </div> 
+                        <p class="price">${totalValueCart}</p>
+
                 `
                 listCartHTML.appendChild(newCartItem)
             
@@ -128,14 +132,15 @@ closeCart.addEventListener('click', () => {
             button.addEventListener("click", (event) => {
                 let productId = event.target.getAttribute("data-id");
     
-                let cartItem = {
+                let newQuantity = {
                     userId: userId,
                     cartId: cartId,
                     quantity: 1,
                     productId: productId
                 };
     
-                addCartItemToCart(cartItem);
+                updateCartItemsQuantity(newQuantity);
+                //fazer nova funcao para fazer somento Update de quantity .
             });
         });
     
@@ -143,14 +148,16 @@ closeCart.addEventListener('click', () => {
             button.addEventListener("click", (event) => {
                 let productId = event.target.getAttribute("data-id");
     
-                let cartItem = {
+                let newQuantity = {
                     userId: userId,
                     cartId: cartId,
                     quantity: -1, // Reduz a quantidade
                     productId: productId
                 };
     
-                addCartItemToCart(cartItem);
+                updateCartItemsQuantity(newQuantity);
+                //fazer nova funcao para fazer somento Update de quantity .
+
             });
         });
     };
