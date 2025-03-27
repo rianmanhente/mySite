@@ -289,7 +289,7 @@ svg{
 }
 
 .itemCartTab {
-        font-size: 16px;
+        font-size: 18px;
 }
 
 /* cart */
@@ -343,20 +343,89 @@ body.showCart .container{
     text-align: center;
     align-items: center;
 }
-.listCart .quantity span{
-    display: inline-block;
-    width: 25px;
-    height: 25px;
+
+.quantity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: -30px;
+    margin-left: 10px;
+}
+/* .listCart .quantity span{
     background-color: #eee;
-    border-radius: 50%;
     color: #555;
+    padding: 2.2px;
+    border-radius: 40%;
     cursor: pointer;
+    font-size: 1.3rem;
 }
 .listCart .quantity span:nth-child(2){
-    background-color: transparent;
-    color: #eee;
+    background-color: #eee;
+    color: #555;
     cursor: auto;
+    font-size: 1.3rem;
+    padding: 2.2px;
+
+
+} */
+
+
+.listCart .quantity span {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffcc00;
+    border-radius: 50%;
+    color: #333;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+.listCart .quantity span:hover {
+    background-color: #ffaa00;
+    transform: scale(1.1);
+}
+
+.listCart .quantity span:active {
+    background-color: #e69500;
+    transform: scale(0.95);
+}
+
+.listCart .quantity {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.listCart .quantity span {
+    background-color: #eee;
+    color: #333;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.listCart .quantity span:hover {
+    background-color: #ddd;
+}
+
+.listCart .quantity span:active {
+    background-color: #ccc;
+    transform: scale(0.95);
+}
+
 .listCart .item:nth-child(even){
     background-color: #eee1;
 }
@@ -405,4 +474,23 @@ body.showCart .container{
 .addCart {
     width: 100%;
     height: 2.4rem;
+}
+
+.cartProductsContainer {
+    font-size: 16px;
+    display: flex;
+    justify-content:  space-between;
+    
+}
+
+.nameAndPrice {
+    display: flex;
+    gap: 20px;
+    margin-left: 10px;
+    
+}
+
+.image {
+    width: 100px;
+    height: 100px;
 }

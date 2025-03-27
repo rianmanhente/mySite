@@ -27,8 +27,8 @@ router.delete("/cart/:id", CartController.destroy);
 
 router.post('/items', CartItemController.create);
 router.get('/items/:id', CartItemController.list);
-router.get('/items', CartItemController.index);
-router.put('/items/:id', CartItemController.update);
+router.get('/itemsUserCart/:id', CartItemController.getItemsByCartId);
+router.put('/itemsUpdate/:productId', CartItemController.updateCartItemsQuantity);
 
 
 module.exports = router;

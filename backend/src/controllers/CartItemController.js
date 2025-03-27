@@ -3,7 +3,7 @@ const CartItem = require('../models/CartItem');
 const Product = require('../models/Product');
 
 const Cart = require("../models/Cart");
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const User = require('../models/User');
 
 const create = async (req, res) => {
@@ -13,7 +13,6 @@ const create = async (req, res) => {
         if (!userId || !productId || !quantity || !cartId) {
             return res.status(400).json({ error: `Faltam infos: ${userId}, ${cartId}, ${productId}, ${quantity}`});
         }
-
 
         // Verifica se já existe este item no carrinho
         let cartItem = await CartItem.findOne({
@@ -56,43 +55,100 @@ const list = async (req, res) => {
     }
 };
 
-const index = async (req, res) => {
-    try {
-        const items = await CartItem.findAll();
-        return res.status(200).res.json({ items })
-    } catch(error) {
-        console.error(error)
-        return res.status(500).json({ error: error.message})
-    }
-}
+// const updateQuantityItemsInCart = async (req, res) => {
+//     try {
+//         const { quantity, userId, cartId} = req.body;
+//         const { productId } = req.params;
 
-const update = async (req, res) => {
+//         let cartItem = await CartItem.findOne({
+//             where: { productId }
+//         });
+
+//         if(!cartItem) {
+//             return res.status(404).json({erro: 'Item nao econtradro'});
+//         }
+
+//         if (quantity <= 0) {
+//             await cartItem.destroy();
+//             return res.json({ message: 'Item removido' });
+//         }
+
+//     } catch(erro) {
+
+//     }
+// }
+
+
+const updateCartItemsQuantity = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { quantity } = req.body;
-        const cartId = req.user.cartId;
+        const { productId } = req.params;
+        const { quantity, cartId, userId } = req.body;
+
+        if(!userId || !cartId || !quantity) {
+            return res.status(403).json({err : "Sem permissao para modificar cart"})
+        }
+        // const { productId, quantity, userId, cartId } = req.body;
 
         const cartItem = await CartItem.findOne({
-            where: { id, cartId }
+            where: { productId, cartId }
         });
 
         if (!cartItem) {
             return res.status(404).json({ error: 'Item não encontrado' });
         }
 
-        if (quantity <= 0) {
-            await cartItem.destroy();
-            return res.json({ message: 'Item removido' });
+        if(cartItem) {
+            cartItem.quantity += quantity;
+            if(cartItem.quantity == 0) {
+                await cartItem.destroy();
+                return res.json({ message: 'Item removido' });
+            }
+            await cartItem.save();
+        } else {
+            cartItem.quantity = quantity;
+            await cartItem.save();
+    
+            return res.json(cartItem);
         }
 
-        cartItem.quantity = quantity;
-        await cartItem.save();
+        // if (quantity == 0) {
+        //     await cartItem.destroy();
+        //     return res.json({ message: 'Item removido' });
+        // }
 
-        return res.json(cartItem);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
     }
 };
 
-module.exports = { create, list, update, index };
+const getItemsByCartId = async (req, res) => {
+    try {
+        const { id : cartId } = req.params; // Pegando o cartId da URL
+
+        if (!cartId || isNaN(cartId)) {
+            return res.status(400).json({ error: "ID do carrinho inválido" });
+        }
+
+        const cartExists = await Cart.findByPk(cartId);
+        if(!cartExists) {
+            return res.status(404).json({error : "Carrinho nao encontrado ou nao existe"})
+        }
+
+        const items = await CartItem.findAll({
+            where: { cartId }
+        });
+
+        return res.status(200).json({ items });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Erro ao buscar itens do carrinho", details: error.message });
+    }
+};
+
+
+
+
+
+
+module.exports = { create, list, updateCartItemsQuantity, getItemsByCartId };
