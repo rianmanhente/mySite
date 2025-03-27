@@ -3,7 +3,7 @@ const CartItem = require('../models/CartItem');
 const Product = require('../models/Product');
 
 const Cart = require("../models/Cart");
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const User = require('../models/User');
 
 const create = async (req, res) => {
@@ -56,15 +56,19 @@ const list = async (req, res) => {
     }
 };
 
-const index = async (req, res) => {
-    try {
-        const items = await CartItem.findAll();
-        return res.status(200).res.json({ items })
-    } catch(error) {
-        console.error(error)
-        return res.status(500).json({ error: error.message})
-    }
-}
+// const getItemsInTheCart = async (req, res) => {
+//     const cartId = Number(req.params.cartId); // Extrai o cartId corretamente
+
+//     try {
+//         const items = await CartItem.findAll({
+//             where: { cartId } // cartId agora está correto
+//         });
+
+//         res.json(items); // Retorna os itens encontrados no carrinho
+//     } catch (error) {
+//         res.status(500).json({ error: "Erro ao buscar itens do carrinho" });
+//     }
+// };
 
 const update = async (req, res) => {
     try {
@@ -95,4 +99,33 @@ const update = async (req, res) => {
     }
 };
 
-module.exports = { create, list, update, index };
+const getItemsByCartId = async (req, res) => {
+    try {
+        const { id : cartId } = req.params; // Pegando o cartId da URL
+
+        if (!cartId || isNaN(cartId)) {
+            return res.status(400).json({ error: "ID do carrinho inválido" });
+        }
+
+        const cartExists = await Cart.findByPk(cartId);
+        if(!cartExists) {
+            return res.status(404).json({error : "Carrinho nao encontrado ou nao existe"})
+        }
+
+        const items = await CartItem.findAll({
+            where: { cartId }
+        });
+
+        return res.status(200).json({ items });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Erro ao buscar itens do carrinho", details: error.message });
+    }
+};
+
+
+
+
+
+
+module.exports = { create, list, update, getItemsByCartId };

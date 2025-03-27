@@ -1,25 +1,39 @@
 // import { api } from '../services/api.js'
 import { addCartItemToCart } from '../services/addCartItemToCart.js'
 import { getProducts } from '../services/getProducts.js'
+import { getCartItems } from '../services/getCartItems.js';
+
+const userData = localStorage.getItem("User");
+const cartData = localStorage.getItem("Cart");
+
+// Convertendo de string JSON para objeto
+const User = JSON.parse(userData);
+const Cart = JSON.parse(cartData);
+
+const userId = User.id;
+const cartId = Cart.id;
 
 getProducts()
-    .then(products => addDataToHTML(products))
+    .then(products => addDataProducts(products))
 
-    const userData = localStorage.getItem("User");
-    const cartData = localStorage.getItem("Cart");
+// if(totalQuantity < 0) {
+//     const totalQuantityElement = document.getElementById("totalQuantity");
+//     totalQuantityElement.textContent = "0"
+// }
+
+//funcao que mostra os itens que estao dentro do carrinho , no shopping cart no front 
+getCartItems(cartId)
+  .then(response => {
+    const cartItems = response.cartItemsWithProducts;
+    const totalQuantity = response.totalQuantity;
     
-    // if (!userData || !cartData) {
-    //     console.error("Erro: Usuário ou carrinho não encontrado no localStorage!");
-    // }
+    // Atualizar o elemento de quantidade total
+    const totalQuantityElement = document.getElementById("totalQuantity");
+    totalQuantityElement.textContent = totalQuantity;
     
-    // Convertendo de string JSON para objeto
-    const User = JSON.parse(userData);
-    const Cart = JSON.parse(cartData);
-    
-    const userId = User.id;
-    const cartId = Cart.id;
-    
-    
+    // Passar os itens do carrinho para a função addDataToCarts
+    return addDataToCarts(cartItems);
+  })
 
 const menuIcon = document.getElementById('menuIcon')
 const segundaUl = document.querySelector('.segundaUl')
@@ -49,9 +63,99 @@ iconCart.addEventListener('click', () => {
 })
 closeCart.addEventListener('click', () => {
     body.classList.toggle('showCart');
-})
+})  
 
-    const addDataToHTML = (products) => {
+
+{/* <div class="cartTab">
+<h1>Shopping Cart</h1>
+<div class="listCart">
+    <div class="itemCartTab">
+        <div class="image">
+            <img src="../assets/camisa.jpeg" alt="">
+        </div>
+        <div class="name">
+            NAME 
+        </div>
+        <div class="totalPrice">
+            $200
+        </div>
+        <div class="quantity">
+            <span class="minus">-</span>
+            <span class="plus">+</span>
+        </div>
+    </div>
+</div>
+<div class="btn">
+    <button class="close">FECHAR</button>
+    <button class="checkOut">FiNALIZAR</button>
+</div>
+</div> */}
+
+// carttab.apennchild(newCartItem)
+
+    const addDataToCarts = (cartItems) => {
+        if(cartItems.length > 0)
+        {
+            cartItems.forEach(cartItem => {
+                let newCartItem = document.createElement('div')
+                newCartItem.classList.add('itemCartTab')
+                newCartItem.innerHTML = 
+                `  
+                <div id="${cartItem.productInfo.product.id}" class="cartProductsContainer">
+                     <div class="nameAndPrice">
+                        <p class="name">${cartItem.productInfo.product.name}</p>
+                        <p class="price">${cartItem.productInfo.product.price}</p>
+                     </div>
+                <img class="image" src="../assets/${cartItem.productInfo.product.image}" alt="">
+                </div>
+                <div class="quantity">
+                    <span data-id="${cartItem.productInfo.product.id}" class="minus">-</span>
+                    <span data-id="${cartItem.productInfo.product.id}"  class="plus">+</span>
+                </div> 
+                `
+                listCartHTML.appendChild(newCartItem)
+            
+                // proxima parada fazer os buttoes de adcionar produto e retirar plus e minus , sendo que tem q ser um update na quatidade ?
+                // fzer validacao para se ja tiver produto no carrinho e o user clicar adionar no cart , el esaber q ta no cart e nao fazer requ com o produto todo e so um update inves tmb
+            })
+            
+            addEventListenersToButtons();
+        }
+    }
+
+    const addEventListenersToButtons = () => {
+        document.querySelectorAll(".plus").forEach(button => {
+            button.addEventListener("click", (event) => {
+                let productId = event.target.getAttribute("data-id");
+    
+                let cartItem = {
+                    userId: userId,
+                    cartId: cartId,
+                    quantity: 1,
+                    productId: productId
+                };
+    
+                addCartItemToCart(cartItem);
+            });
+        });
+    
+        document.querySelectorAll(".minus").forEach(button => {
+            button.addEventListener("click", (event) => {
+                let productId = event.target.getAttribute("data-id");
+    
+                let cartItem = {
+                    userId: userId,
+                    cartId: cartId,
+                    quantity: -1, // Reduz a quantidade
+                    productId: productId
+                };
+    
+                addCartItemToCart(cartItem);
+            });
+        });
+    };
+
+    const addDataProducts = (products) => {
     // remove datas default from HTML
 
         // add new datas
@@ -70,12 +174,13 @@ closeCart.addEventListener('click', () => {
             });
         }
     }
+    
     listProductHTML.addEventListener('click', (event) => {
         let positionClick = event.target;
         console.log(positionClick)
         if(positionClick.classList.contains('addCart')){
             let id_product = positionClick.parentElement.dataset.id;
-            addToCart(id_product);
+            // addToCart(id_product);
             console.log(id_product)
 
             const cartItem = {
@@ -85,32 +190,35 @@ closeCart.addEventListener('click', () => {
                 productId: id_product,
             }
 
-            event.preventDefault()
+            // event.preventDefault()
             addCartItemToCart(cartItem);
           
         }
     })
 
+
+// IMPLEMENTAR O addCartItemToCart no button de + e - dentro do cart para fazer a requisicao dnv para o back
+
 //estou mandando para o carrinho o id do proudto mas na vdd quando clico adcionar ao carrinho preciso fazer uma requisicao para o back para o cartItem
 
-const addToCart = (product_id) => {
-    let positionThisProductInCart = cart.findIndex((value) => value.product_id == product_id);
-    if(cart.length <= 0){
-        cart = [{
-            product_id: product_id,
-            quantity: 1
-        }];
-    }else if(positionThisProductInCart < 0){
-        cart.push({
-            product_id: product_id,
-            quantity: 1
-        });
-    }else{
-        cart[positionThisProductInCart].quantity = cart[positionThisProductInCart].quantity + 1;
-    }
-    // addCartToHTML();
-    // addCartToMemory();
-}
+// const addToCart = (cartItem) => {
+//     let positionThisProductInCart = itemsCart.findIndex((value) => value.product_id == product_id);
+//     if(cart.length <= 0){
+//         cart = [{
+//             product_id: product_id,
+//             quantity: 1
+//         }];
+//     }else if(positionThisProductInCart < 0){
+//         itemsCart.push({
+//             product_id: product_id,
+//             quantity: 1
+//         });
+//     }else{
+//         itemsCart[positionThisProductInCart].quantity = cart[positionThisProductInCart].quantity + 1;
+//     }
+//     // addCartToHTML();
+//     // addCartToMemory();
+// }
 // const addCartToMemory = () => {
 //     localStorage.setItem('cart', JSON.stringify(cart));
 // }
@@ -149,39 +257,39 @@ const addToCart = (product_id) => {
 //     iconCartSpan.innerText = totalQuantity;
 // }
 
-listCartHTML.addEventListener('click', (event) => {
-    let positionClick = event.target;
-    if(positionClick.classList.contains('minus') || positionClick.classList.contains('plus')){
-        let product_id = positionClick.parentElement.parentElement.dataset.id;
-        let type = 'minus';
-        if(positionClick.classList.contains('plus')){
-            type = 'plus';
-        }
-        changeQuantityCart(product_id, type);
-    }
-})
-const changeQuantityCart = (product_id, type) => {
-    let positionItemInCart = cart.findIndex((value) => value.product_id == product_id);
-    if(positionItemInCart >= 0){
-        let info = cart[positionItemInCart];
-        switch (type) {
-            case 'plus':
-                cart[positionItemInCart].quantity = cart[positionItemInCart].quantity + 1;
-                break;
+// listCartHTML.addEventListener('click', (event) => {
+//     let positionClick = event.target;
+//     if(positionClick.classList.contains('minus') || positionClick.classList.contains('plus')){
+//         let product_id = positionClick.parentElement.parentElement.dataset.id;
+//         let type = 'minus';
+//         if(positionClick.classList.contains('plus')){
+//             type = 'plus';
+//         }
+//         changeQuantityCart(product_id, type);
+//     }
+// })
+// const changeQuantityCart = (product_id, type) => {
+//     let positionItemInCart = cart.findIndex((value) => value.product_id == product_id);
+//     if(positionItemInCart >= 0){
+//         let info = cart[positionItemInCart];
+//         switch (type) {
+//             case 'plus':
+//                 cart[positionItemInCart].quantity = cart[positionItemInCart].quantity + 1;
+//                 break;
         
-            default:
-                let changeQuantity = cart[positionItemInCart].quantity - 1;
-                if (changeQuantity > 0) {
-                    cart[positionItemInCart].quantity = changeQuantity;
-                }else{
-                    cart.splice(positionItemInCart, 1);
-                }
-                break;
-        }
-    }
-    addCartToHTML();
-    addCartToMemory();
-}
+//             default:
+//                 let changeQuantity = cart[positionItemInCart].quantity - 1;
+//                 if (changeQuantity > 0) {
+//                     cart[positionItemInCart].quantity = changeQuantity;
+//                 }else{
+//                     cart.splice(positionItemInCart, 1);
+//                 }
+//                 break;
+//         }
+//     }
+//     addCartToHTML();
+//     addCartToMemory();
+// }
 
 // const initApp = () => {
 //     // get data product
