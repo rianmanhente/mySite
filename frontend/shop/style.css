@@ -304,10 +304,19 @@ svg{
     bottom: 0;
     display: grid;
     grid-template-rows: 70px 1fr 70px;
-    transition: .5s;
+    transition: .5s; 
     background-color: #001B25;
-    border-left: 0.1px solid white;
+    /* border-left: 0.1px solid white; */
 }
+
+/* Para telas menores que 768px (dispositivos móveis) */
+@media (max-width: 768px) {
+    .cartTab {
+        width: 100%; /* Ocupa toda a largura da tela */
+        right: -100%; /* Ajuste conforme necessário */
+    }
+}
+
 
 body.showCart .cartTab{
     right: 0;
@@ -321,11 +330,14 @@ body.showCart .container{
     font-weight: 100;
 }
 .cartTab .btn{
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    justify-content: space-around;
 }
 .cartTab button{
-    background-color: #E8BC0E;
+    background-color: #23ef1c;
+    width: 190px;
+    height: 48px;
+    border-radius: 50px;
     border: none;
     font-weight: 100;
     cursor: pointer;
@@ -333,9 +345,23 @@ body.showCart .container{
 .cartTab .close{
     background-color: #eee;
 }
+
+.cartTab .checkOut {
+    color: white;
+}
+
+.listCart {
+    margin-top: 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
 .listCart .item img{
     width: 100%;
+    border-radius: 50%;
 }
+
 .listCart .item{
     display: grid;
     grid-template-columns: 70px 150px 50px 1fr;
@@ -348,8 +374,16 @@ body.showCart .container{
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: -30px;
     margin-left: 10px;
+    margin-top: -30px;
+}
+
+.minus {
+    margin-top: -38px;
+}
+
+.plus {
+    margin-top: -38px;
 }
 /* .listCart .quantity span{
     background-color: #eee;
@@ -479,18 +513,31 @@ body.showCart .container{
 .cartProductsContainer {
     font-size: 16px;
     display: flex;
-    justify-content:  space-between;
-    
+    justify-content: space-between;    
+    padding: 9px 18px 9px 9px; /* top right bottom left */
 }
 
 .nameAndPrice {
     display: flex;
     gap: 20px;
     margin-left: 10px;
-    
 }
 
 .image {
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
+}
+
+.totalValueCart {
+    margin-top: 30px;
+    font-size: 1.3rem;
+}
+
+.seuCarrinho {
+    display: flex;
+}
+
+.image-container {
+    border-radius: 10px; /* Bordas arredondadas */
+    overflow: hidden; /* Faz com que a imagem respeite o border-radius */
 }
