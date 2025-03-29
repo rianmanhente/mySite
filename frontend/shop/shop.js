@@ -23,20 +23,24 @@ getProducts()
 // }
 
 //funcao que mostra os itens que estao dentro do carrinho , no shopping cart no front 
-getCartItems(cartId)
-  .then(response => {
-    const cartItems = response.cartItemsWithProducts;
-    const totalQuantity = response.totalQuantity;
-    const totalValueCart = response.totalValueCart;
-    
-    // Atualizar o elemento de quantidade total
-    const totalQuantityElement = document.getElementById("totalQuantity");
-    totalQuantityElement.textContent = totalQuantity;
-    
-    // Passar os itens do carrinho para a função addDataToCarts
-    return addDataToCarts(cartItems, totalValueCart);
-  })
+document.addEventListener('DOMContentLoaded', () => {
+    getCartItems(cartId)
+    .then(response => {
+        const cartItems = response.cartItemsWithProducts;
+        const totalQuantity = response.totalQuantity;
+        const totalValueCart = response.totalValueCart;
 
+        // Atualizar o elemento de quantidade total
+        const totalQuantityElement = document.getElementById("totalQuantity");
+        totalQuantityElement.textContent = totalQuantity;
+
+        const totalValueCartElement = document.getElementById("totalValueCart");
+        totalValueCartElement.textContent = totalValueCart;
+
+        // Passar os itens do carrinho para a função addDataToCarts
+        return addDataToCarts(cartItems);
+    });
+});
 const menuIcon = document.getElementById('menuIcon')
 const segundaUl = document.querySelector('.segundaUl')
 const primeiraUl = document.querySelector('.primeiraUl')
@@ -95,7 +99,7 @@ closeCart.addEventListener('click', () => {
 
 // carttab.apennchild(newCartItem)
 
-    const addDataToCarts = (cartItems, totalValueCart) => {
+    const addDataToCarts = (cartItems) => {
         if(cartItems.length > 0)
         {
             cartItems.forEach(cartItem => {
@@ -114,7 +118,6 @@ closeCart.addEventListener('click', () => {
                     <span data-id="${cartItem.productInfo.product.id}" class="minus">-</span>
                     <span data-id="${cartItem.productInfo.product.id}"  class="plus">+</span>
                 </div> 
-                        <p class="price">${totalValueCart}</p>
 
                 `
                 listCartHTML.appendChild(newCartItem)
