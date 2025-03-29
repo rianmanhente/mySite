@@ -110,9 +110,11 @@ closeCart.addEventListener('click', () => {
                 <div id="${cartItem.productInfo.product.id}" class="cartProductsContainer">
                      <div class="nameAndPrice">
                         <p class="name">${cartItem.productInfo.product.name}</p>
-                        <p class="price">${cartItem.productInfo.product.price}</p>
+                        <p class="price">R$${cartItem.productInfo.product.price}</p>
                      </div>
-                <img class="image" src="../assets/${cartItem.productInfo.product.image}" alt="">
+                    <div class="image-container">
+                        <img class="image" src="../assets/${cartItem.productInfo.product.image}" alt="">
+                    </div>
                 </div>
                 <div class="quantity">
                     <span data-id="${cartItem.productInfo.product.id}" class="minus">-</span>
